@@ -21,3 +21,5 @@ services:
         resource: '../../../lib/Database/DbPlatform/*'
 
     EzSystems\DoctrineSchema\Builder\SchemaBuilder: ~
+
+    Doctrine\Common\EventManager: ~
