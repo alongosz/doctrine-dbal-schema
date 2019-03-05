@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace EzSystems\DoctrineSchema\Builder;
 
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\DBAL\Schema\SchemaConfig;
 use EzSystems\DoctrineSchema\API\Builder\SchemaBuilder as APISchemaBuilder;
 use EzSystems\DoctrineSchema\API\Event\SchemaBuilderEvent;
 use EzSystems\DoctrineSchema\API\Event\SchemaBuilderEvents;
@@ -39,17 +40,32 @@ class SchemaBuilder implements APISchemaBuilder
      */
     private $schema;
 
+    /**
+     * @var array
+     */
+    private $defaultTableOptions;
+
+    /**
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+     * @param \EzSystems\DoctrineSchema\API\SchemaImporter $schemaImporter
+     * @param array $defaultTableOptions
+     */
     public function __construct(
         EventDispatcherInterface $eventDispatcher,
-        SchemaImporter $schemaImporter
+        SchemaImporter $schemaImporter,
+        array $defaultTableOptions = []
     ) {
         $this->eventDispatcher = $eventDispatcher;
         $this->schemaImporter = $schemaImporter;
+        $this->defaultTableOptions = $defaultTableOptions;
     }
 
     public function buildSchema(): Schema
     {
-        $this->schema = new Schema();
+        $config = new SchemaConfig();
+        $config->setDefaultTableOptions($this->defaultTableOptions);
+
+        $this->schema = new Schema([], [], $config);
         if ($this->eventDispatcher->hasListeners(SchemaBuilderEvents::BUILD_SCHEMA)) {
             $event = new SchemaBuilderEvent($this, $this->schema);
             $this->eventDispatcher->dispatch(SchemaBuilderEvents::BUILD_SCHEMA, $event);
