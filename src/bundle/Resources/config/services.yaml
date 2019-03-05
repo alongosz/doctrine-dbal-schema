@@ -19,3 +19,5 @@ services:
 
     EzSystems\DoctrineSchema\Database\DbPlatform\:
         resource: '../../../lib/Database/DbPlatform/*'
+
+    EzSystems\DoctrineSchema\Builder\SchemaBuilder: ~
