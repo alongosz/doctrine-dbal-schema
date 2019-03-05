@@ -150,26 +150,6 @@ class SchemaImporterTest extends TestCase
                     ]
                 ),
             ],
-            6 => [
-                '06-custom_schema_options.yaml',
-                new Schema(
-                    [
-                        new Table(
-                            'my_table',
-                            [
-                                new Column('name', Type::getType('string')),
-                            ],
-                            [],
-                            [],
-                            0,
-                            [
-                                'charset' => 'utf8mb4',
-                                'collate' => 'utf8mb4_unicode_520_ci',
-                            ]
-                        ),
-                    ]
-                ),
-            ],
             7 => [
                 '07-index.yaml',
                 new Schema(
@@ -185,6 +165,22 @@ class SchemaImporterTest extends TestCase
                                 new Index('ix_simple', ['data1'], false, false),
                                 new Index('ix_composite', ['data1', 'data2'], false, false),
                                 new Index('ux_name', ['name'], true, false),
+                            ]
+                        ),
+                    ]
+                ),
+            ],
+            8 => [
+                '08-length_on_pk.yaml',
+                new Schema(
+                    [
+                        new Table(
+                            'my_table',
+                            [
+                                new Column('id', Type::getType('string'), ['length' => 200]),
+                            ],
+                            [
+                                new Index('primary', ['id'], false, true, [], ['lengths' => [191]]),
                             ]
                         ),
                     ]

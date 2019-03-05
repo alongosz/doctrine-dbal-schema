@@ -1,0 +1,107 @@
+tables:
+    ezcurrencydata:
+        indexes:
+            ezcurrencydata_code: { fields: [code], options: { lengths: [null] } }
+        id:
+            id: { type: integer, nullable: false, options: { autoincrement: true } }
+        fields:
+            auto_rate_value: { type: decimal, nullable: false, options: { default: '0.00000', scale: 5 } }
+            code: { type: string, nullable: false, length: 4, options: { default: '' } }
+            custom_rate_value: { type: decimal, nullable: false, options: { default: '0.00000', scale: 5  } }
+            locale: { type: string, nullable: false, length: 255, options: { default: '' } }
+            rate_factor: { type: decimal, nullable: false, options: { default: '1.00000', scale: 5  } }
+            status: { type: integer, nullable: false, options: { default: '1' } }
+            symbol: { type: string, nullable: false, length: 255, options: { default: '' } }
+
+    ezdfsfile:
+        indexes:
+            ezdfsfile_name_trunk: { fields: [name_trunk], options: { lengths: ['191'] } }
+            ezdfsfile_expired_name: { fields: [expired, name], options: { lengths: [null, '191'] } }
+            ezdfsfile_name: { fields: [name], options: { lengths: ['191'] } }
+            ezdfsfile_mtime: { fields: [mtime] }
+        id:
+            name_hash: { type: string, nullable: false, length: 34, options: { default: '' } }
+        fields:
+            name: { type: text, nullable: false, length: 65535 }
+            name_trunk: { type: text, nullable: false, length: 65535 }
+            datatype: { type: string, nullable: false, length: 255, options: { default: application/octet-stream } }
+            scope: { type: string, nullable: false, length: 25, options: { default: '' } }
+            size: { type: bigint, nullable: false, options: { default: '0', unsigned: true } }
+            mtime: { type: integer, nullable: false, options: { default: '0' } }
+            expired: { type: boolean, nullable: false, options: { default: '0' } }
+            status: { type: boolean, nullable: false, options: { default: '0' } }
+
+    ezdiscountsubrule:
+        id:
+            id: { type: integer, nullable: false, options: { autoincrement: true } }
+        fields:
+            discount_percent: { type: float, nullable: true, length: 0 }
+            discountrule_id: { type: integer, nullable: false, options: { default: '0' } }
+            limitation: { type: string, nullable: true, length: 1, options: { fixed: true } }
+            name: { type: string, nullable: false, length: 255, options: { default: '' } }
+    ezdiscountsubrule_value:
+        id:
+            discountsubrule_id: { type: integer, nullable: false, options: { default: '0' } }
+            issection: { type: integer, nullable: false, options: { default: '0' } }
+            value: { type: integer, nullable: false, options: { default: '0' } }
+
+    ezm_block:
+        indexes:
+            ezm_block__node_id: { fields: [node_id] }
+            ezm_block__is_removed: { fields: [is_removed] }
+        id:
+            id: { type: string, nullable: false, length: 32, options: { fixed: true } }
+        fields:
+            zone_id: { type: string, nullable: false, length: 32, options: { fixed: true } }
+            name: { type: string, nullable: true, length: 255 }
+            node_id: { type: integer, nullable: false, options: { unsigned: true } }
+            overflow_id: { type: string, nullable: true, length: 32, options: { fixed: true } }
+            last_update: { type: integer, nullable: true, options: { default: '0', unsigned: true } }
+            block_type: { type: string, nullable: true, length: 255 }
+            fetch_params: { type: text, nullable: true, length: 0 }
+            rotation_type: { type: integer, nullable: true, options: { unsigned: true } }
+            rotation_interval: { type: integer, nullable: true, options: { unsigned: true } }
+            is_removed: { type: integer, nullable: true, options: { default: '0', unsigned: true } }
+    ezm_pool:
+        indexes:
+            ezm_pool__block_id__ts_publication__priority: { fields: [block_id, ts_publication, priority] }
+            ezm_pool__block_id__ts_visible: { fields: [block_id, ts_visible] }
+            ezm_pool__block_id__ts_hidden: { fields: [block_id, ts_hidden] }
+        id:
+            block_id: { type: string, nullable: false, length: 32, options: { fixed: true } }
+            object_id: { type: integer, nullable: false, options: { unsigned: true } }
+        fields:
+            node_id: { type: integer, nullable: false, options: { unsigned: true } }
+            priority: { type: integer, nullable: true, options: { default: '0', unsigned: true } }
+            ts_publication: { type: integer, nullable: true, options: { default: '0' } }
+            ts_visible: { type: integer, nullable: true, options: { default: '0', unsigned: true } }
+            ts_hidden: { type: integer, nullable: true, options: { default: '0', unsigned: true } }
+            rotation_until: { type: integer, nullable: true, options: { default: '0', unsigned: true } }
+            moved_to: { type: string, nullable: true, length: 32, options: { fixed: true } }
+
+    eztrigger:
+        indexes:
+            eztrigger_fetch: { fields: [name, module_name, function_name], options: { lengths: ['25', '50', '50'] } }
+        uniqueConstraints:
+            eztrigger_def_id: { fields: [module_name, function_name, connect_type], options: { lengths: ['50', '50', null] } }
+        id:
+            id: { type: integer, nullable: false, options: { autoincrement: true } }
+        fields:
+            connect_type: { type: string, nullable: false, length: 1, options: { default: '', fixed: true } }
+            function_name: { type: string, nullable: false, length: 200, options: { default: '' } }
+            module_name: { type: string, nullable: false, length: 200, options: { default: '' } }
+            name: { type: string, nullable: true, length: 255 }
+            workflow_id: { type: integer, nullable: true }
+
+    ezvatrule_product_category:
+        id:
+            product_category_id: { type: integer, nullable: false, options: { default: '0' } }
+            vatrule_id: { type: integer, nullable: false, options: { default: '0' } }
+
+    ezworkflow_group_link:
+        id:
+            group_id: { type: integer, nullable: false, options: { default: '0' } }
+            workflow_id: { type: integer, nullable: false, options: { default: '0' } }
+            workflow_version: { type: integer, nullable: false, options: { default: '0' } }
+        fields:
+            group_name: { type: string, nullable: true, length: 255 }
