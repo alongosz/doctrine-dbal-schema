@@ -24,20 +24,22 @@ class SchemaImporter implements APISchemaImporter
     /**
      * {@inheritdoc}
      */
-    public function importFromFile(string $schemaFilePath): Schema
+    public function importFromFile(string $schemaFilePath, ?Schema $targetSchema = null): Schema
     {
         return $this->importFromArray(
-            Yaml::parseFile($schemaFilePath)
+            Yaml::parseFile($schemaFilePath),
+            $targetSchema
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function importFromSource(string $schemaDefinition): Schema
+    public function importFromSource(string $schemaDefinition, ?Schema $targetSchema = null): Schema
     {
         return $this->importFromArray(
-            Yaml::parse($schemaDefinition)
+            Yaml::parse($schemaDefinition),
+            $targetSchema
         );
     }
 
@@ -45,23 +47,28 @@ class SchemaImporter implements APISchemaImporter
      * Import schema described by array loaded from Yaml custom format to the currently configured database.
      *
      * @param array $schemaDefinition
+     * @param \Doctrine\DBAL\Schema\Schema|null $targetSchema
      *
      * @return \Doctrine\DBAL\Schema\Schema
      *
      * @throws \EzSystems\DoctrineSchema\API\Exception\InvalidConfigurationException
      */
-    private function importFromArray(array $schemaDefinition): Schema
+    private function importFromArray(array $schemaDefinition, ?Schema $targetSchema = null): Schema
     {
+        if (null === $targetSchema) {
+            $targetSchema = new Schema();
+        }
+
         if (!isset($schemaDefinition['tables']) || !is_array($schemaDefinition['tables'])) {
             throw new InvalidConfigurationException('missing or invalid tables data');
         }
 
         $defaultTableOptions = $schemaDefinition['defaults']['tables']['options'] ?? [];
         foreach ($schemaDefinition['tables'] as $tableName => $tableConfiguration) {
-            $this->importSchemaTable($schema, $tableName, $tableConfiguration, $defaultTableOptions);
+            $this->importSchemaTable($targetSchema, $tableName, $tableConfiguration, $defaultTableOptions);
         }
 
-        return $schema;
+        return $targetSchema;
     }
 
     /**
