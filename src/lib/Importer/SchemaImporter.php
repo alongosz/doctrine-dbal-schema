@@ -10,7 +10,6 @@ namespace EzSystems\DoctrineSchema\Importer;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
-use EzSystems\DoctrineSchema\API\Exception\InvalidConfigurationException;
 use EzSystems\DoctrineSchema\API\SchemaImporter as APISchemaImporter;
 use Symfony\Component\Yaml\Yaml;
 
@@ -50,8 +49,6 @@ class SchemaImporter implements APISchemaImporter
      * @param \Doctrine\DBAL\Schema\Schema|null $targetSchema
      *
      * @return \Doctrine\DBAL\Schema\Schema
-     *
-     * @throws \EzSystems\DoctrineSchema\API\Exception\InvalidConfigurationException
      */
     private function importFromArray(array $schemaDefinition, ?Schema $targetSchema = null): Schema
     {
@@ -59,13 +56,8 @@ class SchemaImporter implements APISchemaImporter
             $targetSchema = new Schema();
         }
 
-        if (!isset($schemaDefinition['tables']) || !is_array($schemaDefinition['tables'])) {
-            throw new InvalidConfigurationException('missing or invalid tables data');
-        }
-
-        $defaultTableOptions = $schemaDefinition['defaults']['tables']['options'] ?? [];
         foreach ($schemaDefinition['tables'] as $tableName => $tableConfiguration) {
-            $this->importSchemaTable($targetSchema, $tableName, $tableConfiguration, $defaultTableOptions);
+            $this->importSchemaTable($targetSchema, $tableName, $tableConfiguration);
         }
 
         return $targetSchema;
@@ -77,13 +69,11 @@ class SchemaImporter implements APISchemaImporter
      * @param \Doctrine\DBAL\Schema\Schema target schema
      * @param string $tableName
      * @param array $tableConfiguration
-     * @param array $defaultTableOptions
      */
     private function importSchemaTable(
         Schema $schema,
         string $tableName,
-        array $tableConfiguration,
-        array $defaultTableOptions
+        array $tableConfiguration
     ): void {
         $table = $schema->createTable($tableName);
 
